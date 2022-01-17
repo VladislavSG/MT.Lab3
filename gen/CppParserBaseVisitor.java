@@ -20,13 +20,21 @@ public class CppParserBaseVisitor extends AbstractParseTreeVisitor<Void> impleme
 	}
 
 	protected void newLine() {
+		builder.append("<br>");
 		builder.append(System.lineSeparator());
 	}
 
-	private Void withLevel(Supplier<Void> s) {
-		++level;
+	protected Void withLevel(Supplier<Void> s) {
+		level += 4;
 		Void res = s.get();
-		--level;
+		level -= 4;
+		return res;
+	}
+
+	protected Void withColor(Supplier<Void> s, String color) {
+		builder.append("<span style=\"color:").append(color).append("\";>");
+		Void res = s.get();
+		builder.append("</span>");
 		return res;
 	}
 
@@ -69,7 +77,13 @@ public class CppParserBaseVisitor extends AbstractParseTreeVisitor<Void> impleme
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public Void visitFuncSignature(CppParser.FuncSignatureContext ctx) {
-		return visitChildrenWS(ctx);
+		ctx.type().accept(this);
+		builder.append(' ');
+		withColor(() -> ctx.ID().accept(this), "#008000");
+		ctx.LParent().accept(this);
+		ctx.args().accept(this);
+		ctx.RParent().accept(this);
+		return defaultResult();
 	}
 	/**
 	 * {@inheritDoc}
@@ -84,7 +98,6 @@ public class CppParserBaseVisitor extends AbstractParseTreeVisitor<Void> impleme
 		newLine();
 		ctx.funcBody().accept(this);
 		builder.append(ctx.CloseBlock().getText());
-		newLine();
 		return defaultResult();
 	}
 	/**
@@ -102,7 +115,12 @@ public class CppParserBaseVisitor extends AbstractParseTreeVisitor<Void> impleme
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public Void visitReturn_rule(CppParser.Return_ruleContext ctx) { return visitChildrenWS(ctx); }
+	@Override public Void visitReturn_rule(CppParser.Return_ruleContext ctx) {
+		withColor(() -> ctx.Return().accept(this), "#800080");
+		builder.append(' ');
+		ctx.expr().accept(this);
+		return defaultResult();
+	}
 	/**
 	 * {@inheritDoc}
 	 *
@@ -156,7 +174,12 @@ public class CppParserBaseVisitor extends AbstractParseTreeVisitor<Void> impleme
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
-	@Override public Void visitType(CppParser.TypeContext ctx) { return visitChildrenWS(ctx); }
+	@Override public Void visitType(CppParser.TypeContext ctx) {
+		builder.append("<b>");
+		visitChildrenWS(ctx);
+		builder.append("</b>");
+		return defaultResult();
+	}
 	/**
 	 * {@inheritDoc}
 	 *
