@@ -1,5 +1,9 @@
 lexer grammar CppLexer;
 
+If : 'if' ;
+While : 'while' ;
+Return  : 'return' ;
+
 Long : 'long' ;
 Const : 'const' ;
 Constexpr : 'constexpr' ;
@@ -10,10 +14,8 @@ TypeID  : 'int'
         | 'char'
         | 'bool'
         | 'auto'
-        | 'String'
+        | 'string'
         ;
-
-Return  : 'return' ;
 
 LParent : '(' ;
 RParent : ')' ;
@@ -22,15 +24,12 @@ CloseBlock : '}' ;
 LSParent : '[' ;
 RSParent : ']' ;
 
-ID    : [a-zA-Z][a-zA-Z0-9_]* ;
 String : '"'('\\"' | ~["])*'"' ;
-Integer : Digit+;
+Integer : [0-9]+;
+Bool : 'true' | 'false' ;
+
 EndExpr : ';' ;
 Comma : ',' ;
-
-Assign : '=' ;
-
-Digit : [0-9] ;
 
 PlusPlus : '++' ;
 MinusMinus : '--' ;
@@ -41,9 +40,19 @@ Mul : '*' ;
 Div : '/' ;
 Rem : '%' ;
 
+Less : '<' ;
+Greater : '>' ;
+LessOrEqual : '<=' ;
+GreaterOrEqual : '>=' ;
+Equals : '==' ;
+NotEquals : '!=' ;
+
+Assign : '=' ;
+
 TernIf : '?' ;
 TernIfSep : ':' ;
 
+ID : [a-zA-Z][a-zA-Z0-9_]* ;
 
 WS : [ \t\r\n]+ -> skip ; // skip spaces, tabs, newlines
-COMMENT : '#' ~[\r\n]* '\r'? '\n' -> skip ; //skip comments
+COMMENT : '//' ~[\r\n]* '\r'? '\n' -> skip ; //skip comments
